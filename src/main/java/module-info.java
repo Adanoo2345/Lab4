@@ -4,6 +4,7 @@ module se.kth.adanoo.lab4 {
 
     requires org.controlsfx.controls;
     requires org.kordamp.bootstrapfx.core;
+    requires java.desktop;
 
     opens se.kth.adanoo.lab4 to javafx.fxml;
     exports se.kth.adanoo.lab4;
