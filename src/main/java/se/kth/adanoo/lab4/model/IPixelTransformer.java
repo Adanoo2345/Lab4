@@ -16,5 +16,5 @@ public interface IPixelTransformer {
      * @param originalPixels the original image represented as a 2D array of ARGB pixels
      * @return a 2D array of pixels after the transformation has been applied
      */
-    int[][] processImage(int[][] originalPixels);
+   abstract int[][] processImage(int[][] originalPixels);
 }
