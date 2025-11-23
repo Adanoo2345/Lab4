@@ -1,10 +1,11 @@
-package se.kth.adanoo.lab4.model;
+package se.kth.adanoo.lab4.util;
 
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.image.Image;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import se.kth.adanoo.lab4.model.ImageModel;
 import se.kth.adanoo.lab4.util.FileIO;
 import se.kth.adanoo.lab4.util.ImagePixelsConverter;
 
