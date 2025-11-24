@@ -1,4 +1,4 @@
-package se.kth.adanoo.lab4.model;
+package se.kth.adanoo.lab4.util;
 
 import javafx.scene.Scene;
 import javafx.scene.control.Menu;
