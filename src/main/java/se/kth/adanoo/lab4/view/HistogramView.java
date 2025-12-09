@@ -1,4 +1,4 @@
-package se.kth.adanoo.lab4.model;
+package se.kth.adanoo.lab4.view;
 
 import javafx.geometry.Pos;
 import javafx.scene.chart.LineChart;

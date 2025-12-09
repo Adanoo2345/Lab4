@@ -1,8 +1,9 @@
 package se.kth.adanoo.lab4.controller;
 
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
+import javafx.geometry.Insets;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import se.kth.adanoo.lab4.model.*;
@@ -25,7 +26,7 @@ public class ImageController {
     }
 
     // ---------------------------------------------------------
-    // LOAD
+    // LOAD IMAGE
     // ---------------------------------------------------------
     public void onLoadImage() {
         try {
@@ -56,7 +57,7 @@ public class ImageController {
     }
 
     // ---------------------------------------------------------
-    // SAVE
+    // SAVE IMAGE
     // ---------------------------------------------------------
     public void onSaveImage() {
         try {
@@ -78,38 +79,45 @@ public class ImageController {
     }
 
     // ---------------------------------------------------------
-    // EXIT
+    // EXIT APP
     // ---------------------------------------------------------
     public void onExit() {
         stage.close();
     }
 
     // ---------------------------------------------------------
-    // FILTER: Gray scale
+    // FILTERS
     // ---------------------------------------------------------
     public void onGrayScaleSelected() {
         applyTransformer(new GrayConverter(), "Gray scale applied");
     }
 
-    // ---------------------------------------------------------
-    // FILTER: Soft blur
-    // ---------------------------------------------------------
     public void onSoftBlurSelected() {
         applyTransformer(new SoftBlurEffect(), "Soft blur applied");
     }
 
-    // ---------------------------------------------------------
-    // FILTER: Sharpen
-    // ---------------------------------------------------------
     public void onSharpenSelected() {
         applyTransformer(new Sharpener(), "Sharpen applied");
     }
 
-    // ---------------------------------------------------------
-    // FILTER: Invert colors
-    // ---------------------------------------------------------
     public void onInvertSelected() {
         applyTransformer(new ColorInverter(), "Inverted colors");
+    }
+
+    // ---------------------------------------------------------
+    // WINDOW / LEVEL FILTER
+    // ---------------------------------------------------------
+    public void onWindowLevelSelected() {
+        int level = askUserForLevel();
+        if (level < 0) return;   // avbrutet
+
+        int window = askUserForWindow();
+        if (window < 0) return;  // avbrutet
+
+        applyTransformer(
+                new WindowLevelTransformer(level, window),
+                "Window/Level (L=" + level + ", W=" + window + ")"
+        );
     }
 
     // ---------------------------------------------------------
@@ -117,13 +125,83 @@ public class ImageController {
     // ---------------------------------------------------------
     public void onRestoreOriginal() {
         int[][] restored = model.restoreOriginal();
+        if (restored == null) return;
+
         Image fx = ImagePixelsConverter.pixelsToImage(restored);
         view.showImage(fx, "Original restored");
         view.updateHistogram(model.getHistogram());
     }
 
     // ---------------------------------------------------------
-    // GEMENSAM TRANSFORMER-METOD
+    // ASK USER: LEVEL (slider)
+    // ---------------------------------------------------------
+    private int askUserForLevel() {
+        Dialog<Integer> dialog = new Dialog<>();
+        dialog.setTitle("Select Level");
+        dialog.setHeaderText("Choose LEVEL (0–255)");
+
+        ButtonType okButton = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(okButton, ButtonType.CANCEL);
+
+        Slider slider = new Slider(0, 255, 75);
+        slider.setShowTickLabels(true);
+        slider.setShowTickMarks(true);
+
+        Label valueLabel = new Label("Level: 75");
+
+        slider.valueProperty().addListener((obs, oldVal, newVal) ->
+                valueLabel.setText("Level: " + newVal.intValue()));
+
+        VBox box = new VBox(10, valueLabel, slider);
+        box.setPadding(new Insets(10));
+
+        dialog.getDialogPane().setContent(box);
+
+        dialog.setResultConverter(btn -> {
+            if (btn == okButton)
+                return (int) slider.getValue();
+            return null;
+        });
+
+        return dialog.showAndWait().orElse(-1);
+    }
+
+    // ---------------------------------------------------------
+    // ASK USER: WINDOW (slider)
+    // ---------------------------------------------------------
+    private int askUserForWindow() {
+        Dialog<Integer> dialog = new Dialog<>();
+        dialog.setTitle("Select Window");
+        dialog.setHeaderText("Choose WINDOW (1–255)");
+
+        ButtonType okButton = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(okButton, ButtonType.CANCEL);
+
+        Slider slider = new Slider(1, 255, 35);
+        slider.setShowTickLabels(true);
+        slider.setShowTickMarks(true);
+
+        Label valueLabel = new Label("Window: 35");
+
+        slider.valueProperty().addListener((obs, oldVal, newVal) ->
+                valueLabel.setText("Window: " + newVal.intValue()));
+
+        VBox box = new VBox(10, valueLabel, slider);
+        box.setPadding(new Insets(10));
+
+        dialog.getDialogPane().setContent(box);
+
+        dialog.setResultConverter(btn -> {
+            if (btn == okButton)
+                return (int) slider.getValue();
+            return null;
+        });
+
+        return dialog.showAndWait().orElse(-1);
+    }
+
+    // ---------------------------------------------------------
+    // APPLY ANY TRANSFORMER
     // ---------------------------------------------------------
     private void applyTransformer(IPixelTransformer t, String label) {
         int[][] result = t.processImage(model.getCurrentPixels());
@@ -135,7 +213,7 @@ public class ImageController {
     }
 
     // ---------------------------------------------------------
-    // ERROR
+    // ERROR HANDLING
     // ---------------------------------------------------------
     private void showError(String msg, Exception ex) {
         Alert a = new Alert(Alert.AlertType.ERROR, msg + "\n" + ex.getMessage(), ButtonType.OK);

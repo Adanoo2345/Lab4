@@ -6,7 +6,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import se.kth.adanoo.lab4.controller.ImageController;
-import se.kth.adanoo.lab4.model.HistogramView;
 
 public class MainView {
 
@@ -26,6 +25,7 @@ public class MainView {
     private final MenuItem miSharpen = new MenuItem("Sharpen");
     private final MenuItem miInvert = new MenuItem("Invert colors");
     private final MenuItem miRestore = new MenuItem("Restore original");
+    private final MenuItem miWindow = new MenuItem("Window/Level");
 
     private final Label status = new Label("Ingen bild inläst.");
 
@@ -41,7 +41,7 @@ public class MainView {
         disableProcessMenu();
         processMenu.getItems().addAll(
                 miGray, miBlur, miSharpen, miInvert,
-                new SeparatorMenuItem(),
+                new SeparatorMenuItem(), miWindow,
                 miRestore
         );
 
@@ -73,6 +73,7 @@ public class MainView {
         miBlur.setOnAction(e -> c.onSoftBlurSelected());
         miSharpen.setOnAction(e -> c.onSharpenSelected());
         miInvert.setOnAction(e -> c.onInvertSelected());
+        miWindow.setOnAction(e -> c.onWindowLevelSelected());
         miRestore.setOnAction(e -> c.onRestoreOriginal());
     }
 
@@ -100,6 +101,7 @@ public class MainView {
         miBlur.setDisable(false);
         miSharpen.setDisable(false);
         miInvert.setDisable(false);
+        miWindow.setDisable(false);
         miRestore.setDisable(false);
     }
 
@@ -108,6 +110,7 @@ public class MainView {
         miBlur.setDisable(true);
         miSharpen.setDisable(true);
         miInvert.setDisable(true);
+        miWindow.setDisable(true);
         miRestore.setDisable(true);
     }
 }
